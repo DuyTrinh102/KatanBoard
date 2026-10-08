@@ -1,0 +1,4 @@
+# Rulebook PDFs có bản quyền — chỉ đặt cục bộ để kiểm chứng, không commit
+docs/catan-ck/sources/
+node_modules/
+dist/
