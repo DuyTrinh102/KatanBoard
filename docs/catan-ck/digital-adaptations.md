@@ -76,3 +76,13 @@ Không trong MVP. Nếu thêm: nhập tay kết quả xúc xắc thật, đánh 
 ## DIG-009 Pause / nhân viên
 
 Pause từ mọi cạnh (nút nhỏ ở góc mỗi khay). Pause che toàn bộ thông tin riêng, giữ nguyên pending resolution. Resume/Export/Restart nằm trong menu nhân viên.
+
+
+## DIG-010 Chế độ TV + điện thoại (thêm sau M1)
+
+- Bật bằng công tắc ở màn hình chính, chọn lúc tạo ván; ván TV nằm trên máy chủ cục bộ, ván bàn cảm ứng nằm trong trình duyệt.
+- Máy chủ (Node, `server/`) giữ state và chạy cùng engine; **TV chỉ nhận `PublicGameView`**, mỗi điện thoại chỉ nhận `PrivateGameView` của ghế mình (test `tests/catan-ck/hub.test.ts`).
+- Vào ghế bằng mã QR chứa token ngẫu nhiên 128-bit; ai có mã thì điều khiển ghế đó (thỏa thuận tại bàn — không có tài khoản/đăng nhập). Token lưu tách khỏi file save.
+- Mọi thao tác: điện thoại gửi command + `expectedRevision` + `commandId`; máy chủ xác thực người gửi bằng token, không tin `actorId` từ client; chỉ phát state sau khi đã ghi đĩa.
+- Mất kết nối: điện thoại tự kết nối lại và gửi lại lệnh chưa có xác nhận với cùng `commandId` (không thực hiện hai lần).
+- Đây là bí mật thật hơn chế độ bàn cảm ứng, nhưng không phải chống gian lận: người khác vẫn có thể nhìn màn hình điện thoại; mạng LAN không mã hóa (http/ws).

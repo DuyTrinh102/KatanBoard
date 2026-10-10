@@ -18,6 +18,24 @@ npm run test:e2e     # build + preview + Playwright (Chromium)
 npm run build        # bản build tĩnh trong dist/
 ```
 
+### Chế độ TV + điện thoại
+
+Màn hình chính có công tắc **Chế độ chơi**: `Bàn cảm ứng` (một màn hình, offline) hoặc `TV + điện thoại`.
+
+Chế độ TV + điện thoại cần máy chủ cục bộ (máy tính/mini-PC trong quán, cùng Wi-Fi với điện thoại):
+
+```bash
+npm run build
+npm run server       # http://<IP-LAN>:8787 — PORT, DATA_DIR có thể đổi bằng biến môi trường
+```
+
+1. Mở `http://<IP-LAN>:8787` trên TV → chọn `TV + điện thoại` → Ván mới.
+2. TV hiện mã QR cho từng ghế; mỗi người quét bằng điện thoại để vào ghế của mình.
+3. Bài riêng, bỏ bài, trade, chọn vị trí xây… làm trên điện thoại; TV cập nhật tức thì.
+
+Khi phát triển: chạy song song `npm run dev:server` (cổng 8787) và `npm run dev` (Vite proxy `/ws`).
+Ván TV được lưu trên đĩa máy chủ (`data/catan-ck/`), máy chủ khởi động lại vẫn tiếp tục được; điện thoại mất kết nối sẽ tự kết nối lại.
+
 ### Mở trên iPad / máy khác trong mạng
 
 `npm run dev` (hoặc `npm run build && npm run preview`) in ra địa chỉ `Network: http://<IP>:5173`. Mở địa chỉ đó trên iPad (iPadOS 15.4+), nên xoay ngang và dùng toàn màn hình.

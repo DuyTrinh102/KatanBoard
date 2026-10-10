@@ -15,7 +15,7 @@ export default defineConfig({
   // Hiện mã commit trên màn hình để biết iPad đang chạy đúng bản mới hay bản cũ trong cache.
   define: { __APP_VERSION__: JSON.stringify(gitRev) },
   // host: true → máy khác trong mạng (iPad, màn hình bàn) mở được qua http://<IP-máy-chạy>:5173
-  server: { port: 5173, strictPort: true, host: true },
+  server: { port: 5173, strictPort: true, host: true, proxy: { '/ws': { target: 'ws://localhost:8787', ws: true } } },
   preview: { port: 4173, strictPort: true, host: true },
   // Safari/iPadOS 15.4+ (cần structuredClone); hạ cú pháp cho Safari cũ hơn mặc định.
   build: { target: ['es2020', 'safari15', 'chrome100', 'firefox100'] },

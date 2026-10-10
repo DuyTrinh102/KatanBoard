@@ -73,11 +73,12 @@ export class GameSession {
    * Gửi command. `commandId` do UI sinh một lần cho mỗi thao tác xác nhận, để double tap
    * gửi cùng ID → không thực hiện hai lần.
    */
-  dispatch(actorId: PlayerId, body: CommandBody, commandId: string = this.newId()): Promise<DispatchResult> {
+  dispatch(actorId: PlayerId, body: CommandBody, commandId: string = this.newId(), expectedRevision?: number): Promise<DispatchResult> {
     const run = async (): Promise<DispatchResult> => {
       if (this.readOnly) return { ok: false, code: 'READ_ONLY', publicReason: 'Ván đang được điều khiển ở tab khác' };
       if (this.storageError) return { ok: false, code: 'STORAGE_BLOCKED', publicReason: 'Không lưu được ván — gọi nhân viên để xuất file cứu hộ' };
-      const cmd = { ...body, commandId, expectedRevision: this.state.revision, actorId } as Command;
+      // Client từ xa (điện thoại) gửi revision nó đang thấy → engine từ chối STALE nếu bàn đã đổi.
+      const cmd = { ...body, commandId, expectedRevision: expectedRevision ?? this.state.revision, actorId } as Command;
       const r = applyCommand(this.state, cmd);
       if (!r.ok) return r;
       if (r.duplicate) return { ok: true, duplicate: true };

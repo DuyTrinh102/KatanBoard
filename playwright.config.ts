@@ -15,10 +15,11 @@ export default defineConfig({
     launchOptions: executablePath ? { executablePath } : {},
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 }, hasTouch: true } }],
+  // Máy chủ cục bộ thật (phục vụ dist + WebSocket) với thư mục dữ liệu riêng cho test.
   webServer: {
-    command: 'npm run build && npm run preview',
+    command: 'rm -rf .e2e-data && npm run build && DATA_DIR=.e2e-data PORT=4173 npm run server',
     url: 'http://localhost:4173',
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 180_000,
   },
 });

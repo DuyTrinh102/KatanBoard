@@ -77,7 +77,7 @@ function Stepper({ value, onChange, max }: { value: number; onChange: (n: number
   );
 }
 
-function HandRow({ hand }: { hand: Readonly<Record<CardType, number>> }) {
+export function HandRow({ hand }: { hand: Readonly<Record<CardType, number>> }) {
   return (
     <div className="hand-row" data-testid="private-hand">
       {CARD_TYPES.map((t) => (
@@ -92,7 +92,7 @@ function HandRow({ hand }: { hand: Readonly<Record<CardType, number>> }) {
 }
 
 /** Mặt sau lá bài — chỉ số lượng (công khai). */
-function CardBacks({ count }: { count: number }) {
+export function CardBacks({ count }: { count: number }) {
   const shown = Math.min(count, 9);
   return (
     <span className="backs" aria-label={`${count} lá`}>
@@ -105,7 +105,7 @@ function CardBacks({ count }: { count: number }) {
 }
 
 /** Panel bỏ bài — chỉ render khi private session ở chế độ panel đang mở. */
-function DiscardPanel({ pv, pendingId, onSend, onClose }: { pv: PrivateGameView; pendingId: string; onSend: (b: CommandBody) => void; onClose: () => void }) {
+export function DiscardPanel({ pv, pendingId, onSend, onClose }: { pv: PrivateGameView; pendingId: string; onSend: (b: CommandBody) => void; onClose: () => void }) {
   const [pick, setPick] = useState<Bundle>({});
   const need = pv.discardRequired ?? 0;
   const chosen = Object.values(pick).reduce((s, n) => s + (n ?? 0), 0);
@@ -130,7 +130,7 @@ function DiscardPanel({ pv, pendingId, onSend, onClose }: { pv: PrivateGameView;
 }
 
 /** Soạn đề nghị trade / đổi ngân hàng — riêng tư vì cần xem tay. */
-function TradeComposer({ view, me, pv, ratios, onSend, onClose }: { view: PublicGameView; me: string; pv: PrivateGameView; ratios: Readonly<Record<CardType, number>>; onSend: (b: CommandBody) => void; onClose: () => void }) {
+export function TradeComposer({ view, me, pv, ratios, onSend, onClose }: { view: PublicGameView; me: string; pv: PrivateGameView; ratios: Readonly<Record<CardType, number>>; onSend: (b: CommandBody) => void; onClose: () => void }) {
   const [offer, setOffer] = useState<Bundle>({});
   const [request, setRequest] = useState<Bundle>({});
   const others = view.players.filter((p) => p.id !== me);
@@ -198,6 +198,22 @@ function TradeComposer({ view, me, pv, ratios, onSend, onClose }: { view: Public
   );
 }
 
+/** Câu trạng thái cho một người chơi (dùng chung cho khay bàn cảm ứng và điện thoại). */
+export function playerStatus(view: PublicGameView, me: string): string {
+  const isActive = view.activePlayerId === me;
+  const pending = view.pending;
+  const waitingOnMe = pending?.waitingFor.includes(me) ?? false;
+  if (view.phase === 'GAME_OVER') return view.winner === me ? 'Bạn thắng!' : `${playerName(view, view.winner)} thắng`;
+  if (view.phase === 'SETUP') {
+    const round = view.setup?.round === 2 ? 'Vòng 2 (ngược chiều)' : 'Vòng 1';
+    return isActive
+      ? `${round}: ${view.setup?.step === 'building' ? (view.setup.round === 1 ? 'đặt settlement khởi đầu' : 'đặt city khởi đầu (miễn phí)') : 'đặt đường nối công trình vừa đặt'}`
+      : `${round}: đang chờ ${playerName(view, view.activePlayerId)} đặt quân`;
+  }
+  if (pending) return waitingOnMe ? (pending.kind === 'discard' ? `Bạn phải bỏ ${pending.required?.[me]} lá` : 'Chọn ô để chuyển robber') : `Đang chờ: ${pending.waitingFor.map((p) => playerName(view, p)).join(', ')}`;
+  return isActive ? (view.phase === 'PRE_ROLL' ? 'Lượt của bạn — tung xúc xắc' : 'Lượt của bạn — hành động') : `Lượt của ${playerName(view, view.activePlayerId)}`;
+}
+
 export function Tray(props: TrayProps) {
   const { view, player, actions, privateView: pv, interaction } = props;
   const me = player.id;
@@ -224,11 +240,7 @@ export function Tray(props: TrayProps) {
   const myProposals = view.proposals.filter((p) => p.from === me);
   const incoming = view.proposals.filter((p) => p.to.includes(me));
 
-  let status: ReactNode;
-  if (view.phase === 'GAME_OVER') status = view.winner === me ? 'Bạn thắng!' : `${playerName(view, view.winner)} thắng`;
-  else if (view.phase === 'SETUP') status = isActive ? (view.setup?.step === 'building' ? (view.setup.round === 1 ? 'Đặt settlement khởi đầu' : 'Đặt city khởi đầu') : 'Đặt đường nối công trình vừa đặt') : `Đang chờ ${playerName(view, view.activePlayerId)} đặt quân`;
-  else if (pending) status = waitingOnMe ? (pending.kind === 'discard' ? `Bạn phải bỏ ${pending.required?.[me]} lá` : 'Chọn ô để chuyển robber') : `Đang chờ: ${pending.waitingFor.map((p) => playerName(view, p)).join(', ')}`;
-  else status = isActive ? (view.phase === 'PRE_ROLL' ? 'Lượt của bạn — tung xúc xắc' : 'Lượt của bạn — hành động') : `Lượt của ${playerName(view, view.activePlayerId)}`;
+  const status: ReactNode = playerStatus(view, me);
 
   const myInteraction = interaction && interaction.playerId === me ? interaction : null;
 

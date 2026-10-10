@@ -156,3 +156,61 @@ html, body, #root { margin: 0; -webkit-tap-highlight-color: transparent; -webkit
 .error-strip .btn { margin-top: 6px; min-height: 40px; font-size: 15px; }
 .diag { font-size: 14px; border-collapse: collapse; margin-top: 8px; user-select: text; }
 .diag td { border-top: 1px solid var(--parchment-edge); padding: 4px 8px; vertical-align: top; word-break: break-all; }
+
+/* ───────── Công tắc chế độ ───────── */
+.mode-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.mode-opt { text-align: left; font: inherit; padding: 16px 18px; border-radius: 14px; border: 2px solid var(--parchment-edge); background: #fffaf0; color: var(--ink); display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
+.mode-opt b { font-family: var(--serif); font-size: 22px; }
+.mode-opt span { font-size: 16px; color: var(--muted); }
+.mode-opt.on { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(163, 65, 42, 0.25); background: #fff4e8; }
+@media (max-width: 700px) { .mode-options { grid-template-columns: 1fr; } }
+
+/* ───────── Màn hình TV (bản đồ chung) ───────── */
+.tv { position: fixed; inset: 0; display: grid; grid-template-columns: 1fr minmax(320px, 26vw); grid-template-rows: auto 1fr; gap: 1.2vmin; padding: 1.2vmin; color: var(--ink); }
+.tv-banner { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; background: linear-gradient(180deg, #fbf3de, var(--parchment)); border-radius: 12px; border-left: 10px solid; padding: 0.8vmin 1.4vmin; font-size: clamp(18px, 2.4vmin, 34px); font-family: var(--serif); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45); }
+.tv-conn { color: #b5321f; font-size: 0.7em; }
+.tv-board { min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; }
+.tv-board .board { width: 100%; height: 100%; max-height: 100%; }
+.tv-side { min-height: 0; display: flex; flex-direction: column; gap: 1vmin; overflow: hidden; }
+.tv-side .box { font-size: clamp(14px, 1.7vmin, 22px); }
+.tv-scores td { padding: 0.5vmin 0.4vmin; }
+.tv-scores .big { font-family: var(--serif); font-weight: 700; font-size: 1.3em; }
+.dot { display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; background: #b9ab8c; margin-right: 6px; vertical-align: middle; }
+.dot.on { background: #2f9e44; box-shadow: 0 0 0 2px rgba(47, 158, 68, 0.25); }
+.tv-log { flex: 1; min-height: 0; max-height: none; }
+/* TV/màn hình dựng dọc: bản đồ trên, thông tin dưới. */
+@media (orientation: portrait) {
+  .tv { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 62vh) 1fr; }
+  .tv-side { display: grid; grid-template-columns: 1fr 1fr; align-content: start; }
+}
+.qr-overlay { position: fixed; inset: 0; background: rgba(20, 12, 6, 0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2vmin; z-index: 40; color: var(--parchment); }
+.qr-title { font-family: var(--serif); font-size: clamp(20px, 3vmin, 40px); text-align: center; padding: 0 2vmin; }
+.qr-row { display: flex; flex-wrap: wrap; gap: 2.5vmin; justify-content: center; }
+.qr-card { background: #fff; border: 6px solid; border-radius: 16px; padding: 1.2vmin; display: flex; flex-direction: column; align-items: center; gap: 0.8vmin; color: var(--ink); }
+.qr-name { color: #fff; font-family: var(--serif); font-weight: 700; font-size: clamp(18px, 2.4vmin, 32px); padding: 0.4vmin 1.6vmin; border-radius: 10px; }
+.qr-img { width: clamp(140px, 22vmin, 320px); height: clamp(140px, 22vmin, 320px); image-rendering: pixelated; }
+.qr-state { font-size: clamp(14px, 1.8vmin, 24px); }
+
+/* ───────── Màn hình điện thoại ───────── */
+.phone { position: fixed; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 8px; padding: 0 0 calc(12px + env(safe-area-inset-bottom)); border-top: 6px solid transparent; user-select: none; }
+.phone > .game-card { margin: 16px; }
+.phone-head { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: calc(8px + env(safe-area-inset-top)) 14px 8px; color: #fff; font-family: var(--serif); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4); }
+.phone-name { font-size: 22px; font-weight: 700; }
+.phone-vp { font-size: 22px; color: #ffe39a; }
+.phone-conn { margin-left: auto; font-size: 14px; background: rgba(0, 0, 0, 0.35); padding: 2px 8px; border-radius: 8px; }
+.phone-status { margin: 0 10px; padding: 10px 12px; border-radius: 10px; background: rgba(246, 236, 210, 0.92); font-size: 18px; font-weight: 600; }
+.phone-status.mine { background: #fff1c7; box-shadow: 0 0 0 3px #e3c56b; }
+.phone-hand, .phone-actions { margin: 0 10px; padding: 10px; border-radius: 12px; background: linear-gradient(180deg, #3f2b1b, #2a1b10); color: var(--parchment); display: flex; flex-direction: column; gap: 8px; }
+.phone-hand .rcard { width: 58px; height: 78px; }
+.phone-hand .hand-row { gap: 6px; }
+.phone-board { margin: 0 4px; }
+.phone-board .board { width: 100%; height: auto; max-height: 62vh; display: block; }
+.phone-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.phone-buttons .btn.primary:last-child { grid-column: 1 / -1; }
+.phone .trade-grid { grid-template-columns: 1fr 1fr; }
+.phone-msg { background: rgba(255, 180, 163, 0.15); padding: 6px 8px; border-radius: 8px; }
+/* Vùng thao tác luôn ở đáy màn hình điện thoại (không phải cuộn qua bản đồ). */
+.phone-actions { position: sticky; bottom: calc(6px + env(safe-area-inset-bottom)); z-index: 6; box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.45); max-height: 55vh; overflow-y: auto; }
+.phone .btn { font-size: 17px; min-height: 50px; padding: 6px 10px; }
+.phone-hand .row .muted { font-size: 12px; }
+.phone-hand .chip { min-height: 36px; font-size: 15px; }
