@@ -33,6 +33,28 @@ M1 có thể bắt đầu song song (topology, engine khung, persistence không 
 | M1-14 | Log/replay: replay(initial, log) == state | engine | M1-06 | Test replay trên ván ngẫu nhiên do script chơi | Vitest | P0 | S | — |
 | M1-15 | Launcher + registry tối thiểu + UI thô (board SVG, khay đơn giản) chơi được luồng M1 | app/ui | M1-07..13 | E2E: tạo ván 3/4 người, setup, vài lượt, reload | Playwright | P1 | M ±1 | — |
 
+### Trạng thái M1 (2026-10-10)
+
+| ID | Trạng thái | Ghi chú |
+|---|---|---|
+| M1-01 | Xong | TypeScript 7.0.2 chạy được với Vite 8.3.4/Vitest 5.0.3 (pin chính xác). Thay ESLint bằng test kiến trúc `tests/catan-ck/architecture.test.ts` (cấm React/DOM/Math.random/Date trong engine) |
+| M1-02 | Xong | `src/games/catan-ck/rules/` — mọi giá trị có `ruleId/source/status/evidence`; preset chuẩn bị chặn |
+| M1-03 | Xong | `src/shared/random.ts` (sfc32 + test vector) |
+| M1-04 | Xong | 19 hex / 54 vertex / 72 edge, quan hệ đối xứng có test |
+| M1-05 | Một phần | Board ngẫu nhiên xong; layout beginner cố định và vị trí cảng chính thức **bị chặn bởi RB-001** |
+| M1-06 | Xong | Command nguyên tử, idempotent, STALE, invariants |
+| M1-07 | Xong (luật ứng viên) | SET-011/012 UNRESOLVED |
+| M1-08 | Xong | Pending stack (discard, moveRobber); bước event die đặt chỗ cho M2 |
+| M1-09 | Xong (luật ứng viên) | Commodity của city kéo từ M2-02 lên vì đơn giản và tránh hành vi base sai |
+| M1-10 | Xong | |
+| M1-11 | Xong | Chỉ người trong lượt soạn/sửa đề nghị; người nhận đồng ý/từ chối (đề nghị ngược nói miệng rồi người trong lượt sửa) |
+| M1-12 | Xong | Knight cắt đường thêm ở M2 |
+| M1-13 | Xong | fake-indexeddb trong unit test; kiểm thử thật trên kiosk ở M4 |
+| M1-14 | Xong | Fuzz 6 ván ngẫu nhiên × 1500 bước, replay khớp |
+| M1-15 | Xong (UI thô) | E2E: ván 3/4 người, setup, tung, reload; giữ-để-xem-bài |
+
+Bằng chứng: `npm run check` (80 unit test) và `npm run test:e2e` (3 E2E) đều đạt ngày 2026-10-10 trong môi trường cloud (Chromium headless, 1920×1080). Chưa thử trên phần cứng cảm ứng.
+
 **Nghiệm thu M1:** engine chạy độc lập UI; test luật đã triển khai pass; reload không đổi roll/draw. Gắn nhãn "bản phát triển", chưa phải C&K.
 
 ## M2 — Cơ chế C&K + toàn bộ Progress Cards

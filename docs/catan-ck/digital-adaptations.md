@@ -28,6 +28,7 @@ Phương án MVP:
 | Thẻ VP đã lật | ✔ | | |
 | Lá bị robber/Bishop lấy ngẫu nhiên | Chỉ "1 lá" | Người lấy + người mất thấy loại | Log công khai: "A lấy 1 lá của B" |
 | Lá bỏ khi 7 / Saboteur | Chỉ số lượng | Người bỏ | |
+| Sản lượng (production) và đổi ngân hàng | ✔ | | Suy ra được từ board/xúc xắc, như bàn thật |
 | Lá đưa trong Wedding / Commercial Harbor / Monopoly | Monopoly: loại + số lượng công khai (do người chơi tuyên bố loại); Wedding/Harbor: chỉ số lượng | Hai bên | |
 | Tay bị xem bởi Spy / Master Merchant | "A đã xem bài của B" | A (trong session), B (biết bị xem) | |
 | Đề nghị trade đang soạn (chưa gửi) | | Người soạn | |

@@ -6,9 +6,10 @@
  */
 import type { Harbor, HexTile } from '../board/layout';
 import type { EdgeId, HexId, VertexId } from '../board/topology';
-import { computeScore, handTotal, roadLengths, type ScoreBreakdown } from '../engine/queries';
+import { bankRatio, computeScore, handTotal, roadLengths, robberVictims, type ScoreBreakdown } from '../engine/queries';
+import { getLegalActions } from '../engine/legal';
 import type { Building, DiceResult, GameState, LogEntry, Phase, PlayerId, SeatId, SetupProgress, TradeProposal } from '../engine/state';
-import { getRuleset, isRulesetVerified, type CardType } from '../rules';
+import { CARD_TYPES, getRuleset, isRulesetVerified, type CardType } from '../rules';
 
 export interface PublicPlayerView {
   readonly id: PlayerId;
@@ -147,4 +148,36 @@ export function getPrivateView(state: GameState, playerId: PlayerId): PrivateGam
       .filter((e) => e.secret?.visibleTo.includes(playerId))
       .map((e) => ({ seq: e.seq, kind: e.kind, data: { ...e.data, ...e.secret!.data } })),
   };
+}
+
+// ───────────── View phụ cho UI (đều dựa trên engine, không tự suy luật) ─────────────
+
+export interface ActionView {
+  readonly type: string;
+  readonly enabled: boolean;
+  readonly reason?: string;
+  readonly targets?: readonly string[];
+}
+
+/**
+ * Hành động hợp lệ cho một người. `privateOpen` = private session của chính người đó đang mở:
+ * chỉ khi đó mới kèm lý do chi tiết (ví dụ "Thiếu 1 Quặng") vì lý do này lộ tay bài.
+ */
+export function getActionsView(state: GameState, playerId: PlayerId, privateOpen: boolean): ActionView[] {
+  return getLegalActions(state, playerId).map((a) => ({
+    type: a.type,
+    enabled: a.enabled,
+    ...(a.reason ? { reason: privateOpen && a.privateReason ? a.privateReason : a.reason } : {}),
+    ...(a.targets ? { targets: a.targets } : {}),
+  }));
+}
+
+/** Tỷ lệ đổi ngân hàng của người chơi (suy ra từ vị trí công trình — công khai). */
+export function getBankRatios(state: GameState, playerId: PlayerId): Record<CardType, number> {
+  return Object.fromEntries(CARD_TYPES.map((t) => [t, bankRatio(state, playerId, t)])) as Record<CardType, number>;
+}
+
+/** Ai có thể bị robber lấy bài nếu chọn ô này (công trình kề + số lá > 0 đều công khai). */
+export function getRobberVictims(state: GameState, hex: HexId, thief: PlayerId): PlayerId[] {
+  return robberVictims(state, hex, thief);
 }

@@ -97,7 +97,7 @@ Launcher → Tạo ván (số người, chọn ghế, màu+biểu tượng, Open
 | Tung xúc xắc | active | — | Nút trong khay; 3 xúc xắc lăn giữa board ≤ 800 ms, có "bỏ qua animation" |
 | Giải quyết event | máy | ngắn | Banner ngang giữa bàn, 4 bản xoay về các ghế; tàu tiến 1 ô / cổng màu |
 | Rút Progress Card | người đủ điều kiện | không | Lá úp bay tới khay; VP lật công khai |
-| Nhận tài nguyên | máy | không | Lá úp bay từ hex tới khay + số "+2" công khai (loại lá bí mật trừ Open Table) |
+| Nhận tài nguyên | máy | không | Lá bay từ hex tới khay; loại + số lượng công khai vì suy ra được từ board và xúc xắc (sửa ở M1 — trước đây ghi nhầm là bí mật) |
 | Lựa chọn bắt buộc (bỏ bài, chọn city…) | decisionOwners | **có** | Dải trạng thái "Đang chờ: B, D" ở mọi khay; private panel ở khay người cần chọn |
 | Xây | active | — | §5 |
 | Trade | active + đối tác | — | §7 |
