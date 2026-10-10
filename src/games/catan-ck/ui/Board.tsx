@@ -83,7 +83,8 @@ function NumberToken({ x, y, n }: { x: number; y: number; n: number }) {
   const hot = n === 6 || n === 8;
   const count = pips(n);
   return (
-    <g filter="url(#f-soft)" aria-label={`Số ${n}`}>
+    <g aria-label={`Số ${n}`}>
+      <circle cx={x + 1.5} cy={y + 2.5} r={21} fill="rgba(0,0,0,.35)" />
       <circle cx={x} cy={y} r={21} fill="url(#g-token)" stroke="#8a7350" strokeWidth={1.5} />
       <circle cx={x} cy={y} r={17.5} fill="none" stroke="rgba(138,115,80,.35)" strokeWidth={1} />
       <text x={x} y={y + 5} className={`token ${hot ? 'token-red' : ''}`}>{n}</text>
@@ -96,7 +97,8 @@ function NumberToken({ x, y, n }: { x: number; y: number; n: number }) {
 
 function Settlement({ p, color, icon }: { p: Pt; color: string; icon: string }) {
   return (
-    <g transform={`translate(${p.x} ${p.y + 7}) scale(1.3)`} filter="url(#f-shadow)">
+    <g transform={`translate(${p.x} ${p.y + 7}) scale(1.3)`}>
+      <path d="M-10 4 V-7 L-2 -15 L3 -19 L11 -11 V0 L6 4 Z" transform="translate(2 2.5)" fill="rgba(0,0,0,.4)" />
       <path d="M-10 4 V-7 L-2 -15 L6 -7 V4 Z" fill={color} stroke="rgba(0,0,0,.55)" strokeWidth={1} />
       <path d="M6 -7 L11 -11 V0 L6 4 Z" fill={color} />
       <path d="M6 -7 L11 -11 V0 L6 4 Z" fill="rgba(0,0,0,.3)" />
@@ -109,7 +111,8 @@ function Settlement({ p, color, icon }: { p: Pt; color: string; icon: string }) 
 
 function City({ p, color, icon }: { p: Pt; color: string; icon: string }) {
   return (
-    <g transform={`translate(${p.x + 3} ${p.y + 9}) scale(1.3)`} filter="url(#f-shadow)">
+    <g transform={`translate(${p.x + 3} ${p.y + 9}) scale(1.3)`}>
+      <path d="M-14 5 V-17 L-9 -24 L-4 -28 L1 -21 V-10 H11 V1 L6 5 Z" transform="translate(2 2.5)" fill="rgba(0,0,0,.4)" />
       {/* thân nhà ngang */}
       <path d="M-14 5 V-6 H6 V5 Z" fill={color} stroke="rgba(0,0,0,.55)" strokeWidth={1} />
       <path d="M6 -6 L11 -10 V1 L6 5 Z" fill={color} />
@@ -131,7 +134,8 @@ function Road({ a, b, color }: { a: Pt; b: Pt; color: string }) {
   const len = Math.hypot(b.x - a.x, b.y - a.y) * 0.66;
   const ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
   return (
-    <g transform={`translate(${mx} ${my}) rotate(${ang})`} filter="url(#f-shadow)" className="road">
+    <g transform={`translate(${mx} ${my}) rotate(${ang})`} className="road">
+      <rect x={-len / 2 + 1.5} y={-3.5} width={len} height={11} rx={2.5} fill="rgba(0,0,0,.35)" />
       <rect x={-len / 2} y={-5.5} width={len} height={11} rx={2.5} fill={color} stroke="rgba(0,0,0,.55)" strokeWidth={1} />
       <rect x={-len / 2 + 1.5} y={-4} width={len - 3} height={3.2} rx={1.5} fill="rgba(255,255,255,.28)" />
     </g>
@@ -140,7 +144,8 @@ function Road({ a, b, color }: { a: Pt; b: Pt; color: string }) {
 
 function Robber({ x, y }: { x: number; y: number }) {
   return (
-    <g transform={`translate(${x} ${y})`} filter="url(#f-shadow)" aria-label="Robber">
+    <g transform={`translate(${x} ${y})`} aria-label="Robber">
+      <ellipse cx={3} cy={16} rx={12} ry={4.5} fill="rgba(0,0,0,.4)" />
       <ellipse cx={0} cy={14} rx={11} ry={4.5} fill="url(#g-robber)" />
       <path d="M-8 13 Q-9 2 -4 -4 Q0 -7 4 -4 Q9 2 8 13 Z" fill="url(#g-robber)" />
       <circle cx={0} cy={-10} r={7} fill="url(#g-robber)" />
@@ -151,7 +156,8 @@ function Robber({ x, y }: { x: number; y: number }) {
 function HarborBadge({ kind, x, y }: { kind: string; x: number; y: number }) {
   const generic = kind === 'generic';
   return (
-    <g transform={`translate(${x} ${y})`} filter="url(#f-soft)">
+    <g transform={`translate(${x} ${y})`}>
+      <circle cx={1.5} cy={2.5} r={23} fill="rgba(0,0,0,.35)" />
       <circle r={23} fill="#fbf4e2" stroke="#6b5a3a" strokeWidth={1.5} />
       {generic ? (
         <>
@@ -194,7 +200,8 @@ export function Board({ view, targets }: { view: PublicGameView; targets: BoardT
       </defs>
 
       {/* Khung gỗ + biển */}
-      <polygon points={hexPoints(0, 0, S * 5.75, 0)} fill="url(#g-frame)" filter="url(#f-shadow)" />
+      <polygon points={hexPoints(0, 14, S * 5.85, 0)} fill="rgba(0,0,0,.45)" />
+      <polygon points={hexPoints(0, 0, S * 5.75, 0)} fill="url(#g-frame)" />
       <polygon points={hexPoints(0, 0, S * 5.55, 0)} fill="url(#g-sea)" />
       <polygon points={hexPoints(0, 0, S * 5.55, 0)} fill="url(#p-waves)" />
 

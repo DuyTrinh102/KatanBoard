@@ -1,5 +1,6 @@
 import { openDB, type IDBPDatabase } from 'idb';
 import type { SaveRecord } from './saveFile';
+import { deepClone } from '../shared/clone';
 
 /** Interface lưu trữ — controller dùng interface này để test được bằng bộ nhớ. */
 export interface GameStore {
@@ -78,11 +79,11 @@ export class MemoryGameStore implements GameStore {
       throw new DOMException('Quota exceeded (giả lập)', 'QuotaExceededError');
     }
     const existing = this.rows.get(record.gameId);
-    this.rows.set(record.gameId, { gameId: record.gameId, current: structuredClone(record), previous: existing?.current ?? null });
+    this.rows.set(record.gameId, { gameId: record.gameId, current: deepClone(record), previous: existing?.current ?? null });
   }
   async load(gameId: string) {
     const row = this.rows.get(gameId);
-    return row ? { current: structuredClone(row.current), previous: row.previous } : null;
+    return row ? { current: deepClone(row.current), previous: row.previous } : null;
   }
   async list() {
     return [...this.rows.values()].map((r) => ({ gameId: r.gameId, revision: r.current.revision, savedAt: r.current.savedAt, phase: r.current.state.turn.phase }));

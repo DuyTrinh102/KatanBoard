@@ -10,6 +10,8 @@ import { acquireGameLock, type TabLock } from '../persistence/tabLock';
 import { freshSeed } from '../shared/random';
 import { GAMES } from './registry';
 import { ErrorBoundary } from './ErrorBoundary';
+import { deviceInfo, getErrors, onErrorsChange } from './diagnostics';
+import { useSyncExternalStore } from 'react';
 
 const store = new IndexedDbGameStore();
 
@@ -60,9 +62,12 @@ export function App() {
 
   if (screen.kind === 'game')
     return (
-      <ErrorBoundary onReset={exit}>
-        <GameScreen session={screen.session} onExit={exit} />
-      </ErrorBoundary>
+      <>
+        <ErrorBoundary onReset={exit}>
+          <GameScreen session={screen.session} onExit={exit} />
+        </ErrorBoundary>
+        <ErrorStrip />
+      </>
     );
   if (screen.kind === 'new') return <NewGame onCancel={() => setScreen({ kind: 'launcher' })} onStart={(p, o) => void start(p, o)} />;
 
@@ -95,6 +100,51 @@ export function App() {
         </div>
       )}
       <ImportBox onImported={(id) => void refresh().then(() => open(id))} />
+      <DeviceInfoBox />
+      <ErrorStrip />
+    </div>
+  );
+}
+
+/** Dải lỗi nổi — chỉ hiện khi có lỗi JS, để chụp màn hình gửi hỗ trợ. */
+function ErrorStrip() {
+  const list = useSyncExternalStore(onErrorsChange, getErrors);
+  const [hidden, setHidden] = useState(false);
+  if (list.length === 0 || hidden) return null;
+  return (
+    <div className="error-strip" role="alert" data-testid="error-strip">
+      <b>Lỗi kỹ thuật (chụp màn hình gửi hỗ trợ):</b>
+      {list.map((e, i) => (
+        <div key={i}>{e}</div>
+      ))}
+      <button type="button" className="btn" onClick={() => setHidden(true)}>Ẩn</button>
+    </div>
+  );
+}
+
+function DeviceInfoBox() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="game-card">
+      <button type="button" className="btn" data-testid="device-info" onClick={() => setOpen(!open)}>
+        {open ? 'Ẩn thông tin thiết bị' : 'Thông tin thiết bị (hỗ trợ kỹ thuật)'}
+      </button>
+      {open && (
+        <table className="diag">
+          <tbody>
+            {deviceInfo().map(([k, v]) => (
+              <tr key={k}>
+                <td>{k}</td>
+                <td>{v}</td>
+              </tr>
+            ))}
+            <tr>
+              <td>Phiên bản app</td>
+              <td>{__APP_VERSION__}</td>
+            </tr>
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

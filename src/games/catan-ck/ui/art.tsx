@@ -76,12 +76,6 @@ export function BoardDefs() {
         <stop offset="60%" stopColor="rgba(0,0,0,0)" />
         <stop offset="100%" stopColor="rgba(0,0,0,.28)" />
       </radialGradient>
-      <filter id="f-shadow" x="-30%" y="-30%" width="160%" height="160%">
-        <feDropShadow dx="1.5" dy="2.5" stdDeviation="1.6" floodColor="#000" floodOpacity=".45" />
-      </filter>
-      <filter id="f-soft" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" floodColor="#000" floodOpacity=".35" />
-      </filter>
 
       {/* Sprites địa hình — gốc toạ độ ở chân hoạ tiết */}
       <g id="tree">
@@ -226,7 +220,8 @@ export function ResourceGlyph({ type }: { type: CardType }) {
 /** Defs dùng chung cho cả trang — render đúng MỘT lần (tránh trùng id). */
 export function GlobalDefs() {
   return (
-    <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
+    // Không dùng 0×0/display:none: một số bản WebKit bỏ qua gradient/sprite trong SVG không có kích thước.
+    <svg width="2" height="2" style={{ position: 'absolute', left: -10, top: -10, opacity: 0, pointerEvents: 'none' }} aria-hidden="true" focusable="false">
       <BoardDefs />
     </svg>
   );

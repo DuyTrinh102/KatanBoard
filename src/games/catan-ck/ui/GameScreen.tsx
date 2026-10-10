@@ -16,13 +16,38 @@ const STAGE_W = 1920;
 const STAGE_H = 1080;
 const PANEL_IDLE_MS = 30_000;
 
-function useStageScale(): number {
-  const calc = () => Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
+function viewportSize(): { w: number; h: number } {
+  // iPad Safari: visualViewport phản ánh đúng vùng nhìn thấy sau khi xoay máy/ẩn thanh địa chỉ.
+  const vv = window.visualViewport;
+  return { w: vv?.width ?? window.innerWidth, h: vv?.height ?? window.innerHeight };
+}
+
+interface StageFit {
+  readonly scale: number;
+  readonly left: number;
+  readonly top: number;
+}
+
+/** Thu nhỏ sân khấu 1920×1080 cho vừa màn hình và căn giữa (letterbox). */
+function useStageScale(): StageFit {
+  const calc = (): StageFit => {
+    const { w, h } = viewportSize();
+    const scale = Math.min(w / STAGE_W, h / STAGE_H);
+    return { scale, left: Math.max(0, (w - STAGE_W * scale) / 2), top: Math.max(0, (h - STAGE_H * scale) / 2) };
+  };
   const [scale, setScale] = useState(calc);
   useEffect(() => {
     const on = () => setScale(calc());
+    // orientationchange trên iOS bắn trước khi kích thước cập nhật → đo lại sau một nhịp.
+    const onOrient = () => window.setTimeout(on, 250);
     window.addEventListener('resize', on);
-    return () => window.removeEventListener('resize', on);
+    window.addEventListener('orientationchange', onOrient);
+    window.visualViewport?.addEventListener('resize', on);
+    return () => {
+      window.removeEventListener('resize', on);
+      window.removeEventListener('orientationchange', onOrient);
+      window.visualViewport?.removeEventListener('resize', on);
+    };
   }, []);
   return scale;
 }
@@ -58,7 +83,7 @@ export function GameScreen({ session, onExit }: GameScreenProps) {
   });
   const state = snap.state;
   const view = useMemo(() => getPublicView(state), [state]);
-  const scale = useStageScale();
+  const fit = useStageScale();
 
   const [privateSession, setPrivateSession] = useState<{ playerId: string; mode: 'hold' | 'panel' } | null>(null);
   const [interaction, setInteraction] = useState<Interaction | null>(null);
@@ -219,7 +244,7 @@ export function GameScreen({ session, onExit }: GameScreenProps) {
   return (
     <div className="viewport" onPointerDownCapture={() => (lastTouch.current = Date.now())}>
       <GlobalDefs />
-      <div className="stage" style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}>
+      <div className="stage" style={{ width: STAGE_W, height: STAGE_H, left: fit.left, top: fit.top, transform: `scale(${fit.scale})` }}>
         <div className="board-area">
           <Board view={view} targets={paused ? null : targets} />
         </div>

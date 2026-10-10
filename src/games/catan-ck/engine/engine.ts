@@ -1,4 +1,5 @@
 import { createRandomSource, seedRng, type RandomSource } from '../../../shared/random';
+import { deepClone } from '../../../shared/clone';
 import { generateRandomBoard } from '../board/layout';
 import { resolveLongestRoadHolder } from '../board/longestRoad';
 import type { EdgeId, VertexId } from '../board/topology';
@@ -613,7 +614,7 @@ export function applyCommand(state: GameState, cmd: Command, opts: ApplyOptions 
 
   const rs = getRuleset(state.meta.config.rulesetId, state.meta.config.rulesetMode);
   // Log là append-only, entry không bao giờ bị sửa → chỉ sao chép mảng, không deep-clone (tránh O(n²)).
-  const draft: GameState = { ...structuredClone({ ...state, log: [] }), log: [...state.log] };
+  const draft: GameState = { ...deepClone({ ...state, log: [] }), log: [...state.log] };
   const rng = (opts.random ?? defaultRandom)(draft);
   applyMutation(draft, cmd, rng, rs);
   checkWin(draft, rs);
