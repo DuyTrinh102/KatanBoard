@@ -18,6 +18,11 @@ npm run test:e2e     # build + preview + Playwright (Chromium)
 npm run build        # bản build tĩnh trong dist/
 ```
 
+### Mở trên iPad / máy khác trong mạng
+
+`npm run dev` (hoặc `npm run build && npm run preview`) in ra địa chỉ `Network: http://<IP>:5173`. Mở địa chỉ đó trên iPad (iPadOS 15.4+), nên xoay ngang và dùng toàn màn hình.
+Khi mở qua `http://<IP>` trình duyệt coi là *không bảo mật*: app tự dùng phương án thay thế cho `crypto.randomUUID` và Web Locks (khóa một tab bằng BroadcastChannel).
+
 ## Đã có ở M1
 
 - Board graph hex/vertex/edge ID ổn định; board ngẫu nhiên (6/8 không kề nhau); cảng (vị trí xấp xỉ, chờ đối chiếu nguồn).

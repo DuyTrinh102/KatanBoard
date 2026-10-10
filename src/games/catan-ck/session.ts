@@ -3,6 +3,7 @@ import type { Command, CommandBody, Rejection } from './engine/commands';
 import type { GameState, PlayerId } from './engine/state';
 import { makeSaveRecord, type SaveRecord } from '../../persistence/saveFile';
 import type { GameStore } from '../../persistence/store';
+import { newId as defaultNewId } from '../../shared/id';
 
 export type DispatchResult =
   | { readonly ok: true; readonly duplicate: boolean }
@@ -34,7 +35,7 @@ export class GameSession {
     state: GameState,
     private readonly store: GameStore,
     private readonly readOnly = false,
-    private readonly newId: () => string = () => globalThis.crypto.randomUUID(),
+    private readonly newId: () => string = defaultNewId,
   ) {
     this.commands = [...commands];
     this.state = state;

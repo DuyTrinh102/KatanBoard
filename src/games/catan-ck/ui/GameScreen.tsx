@@ -1,3 +1,4 @@
+import { newId } from '../../../shared/id';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import type { GameSession, SessionSnapshot } from '../session';
 import type { CommandBody } from '../engine/commands';
@@ -129,7 +130,7 @@ export function GameScreen({ session, onExit }: GameScreenProps) {
     }
     const actions = getActionsView(state, actor, false);
     const a = actions.find((x) => x.type === kind);
-    setInteraction({ playerId: actor, kind, targets: a?.targets ?? [], selected: null, victim: null, victims: [], commandId: crypto.randomUUID() });
+    setInteraction({ playerId: actor, kind, targets: a?.targets ?? [], selected: null, victim: null, victims: [], commandId: newId() });
   }, [state, view.phase, view.setup?.step, view.pending?.kind, view.activePlayerId, snap.readOnly, paused]);
 
   // Tương tác xây bị hủy nếu state đổi làm nó mất hiệu lực (ví dụ hết lượt).
@@ -145,7 +146,7 @@ export function GameScreen({ session, onExit }: GameScreenProps) {
   const startInteraction = (playerId: string, kind: InteractionKind) => {
     const a = getActionsView(state, playerId, false).find((x) => x.type === kind);
     if (!a?.enabled) return;
-    setInteraction({ playerId, kind, targets: a.targets ?? [], selected: null, victim: null, victims: [], commandId: crypto.randomUUID() });
+    setInteraction({ playerId, kind, targets: a.targets ?? [], selected: null, victim: null, victims: [], commandId: newId() });
   };
 
   const confirmInteraction = async () => {

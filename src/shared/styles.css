@@ -54,7 +54,7 @@ html, body, #root { margin: 0; height: 100%; overflow: hidden; touch-action: man
 .game-card input:not([type]) { font-size: 20px; padding: 8px; border-radius: 8px; border: 1px solid #b59d70; min-height: 48px; background: #fffdf6; }
 
 /* Stage cố định 1920×1080, scale theo màn hình */
-.viewport { width: 100vw; height: 100vh; display: flex; align-items: flex-start; justify-content: flex-start; overflow: hidden; }
+.viewport { width: 100vw; height: 100vh; height: 100dvh; display: flex; align-items: flex-start; justify-content: flex-start; overflow: hidden; }
 .stage { position: relative; transform-origin: 0 0; overflow: hidden; }
 .board-area { position: absolute; left: 560px; top: 172px; width: 800px; height: 736px; display: flex; align-items: center; justify-content: center; }
 .board { width: 800px; height: 736px; overflow: visible; filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.55)); }

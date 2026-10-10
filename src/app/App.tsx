@@ -9,6 +9,7 @@ import { IndexedDbGameStore } from '../persistence/store';
 import { acquireGameLock, type TabLock } from '../persistence/tabLock';
 import { freshSeed } from '../shared/random';
 import { GAMES } from './registry';
+import { ErrorBoundary } from './ErrorBoundary';
 
 const store = new IndexedDbGameStore();
 
@@ -57,7 +58,12 @@ export function App() {
     void refresh();
   };
 
-  if (screen.kind === 'game') return <GameScreen session={screen.session} onExit={exit} />;
+  if (screen.kind === 'game')
+    return (
+      <ErrorBoundary onReset={exit}>
+        <GameScreen session={screen.session} onExit={exit} />
+      </ErrorBoundary>
+    );
   if (screen.kind === 'new') return <NewGame onCancel={() => setScreen({ kind: 'launcher' })} onStart={(p, o) => void start(p, o)} />;
 
   return (
