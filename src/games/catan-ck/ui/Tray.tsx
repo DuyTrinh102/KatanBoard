@@ -4,6 +4,7 @@ import { CARD_EN, CARD_LABEL, describeBundle } from '../engine/text';
 import type { CommandBody } from '../engine/commands';
 import type { ActionView, PrivateGameView, PublicGameView, PublicPlayerView } from '../projections/views';
 import { ICON_GLYPH, playerName } from './format';
+import { CARD_BG, ResourceIcon } from './art';
 
 export type InteractionKind = 'placeSetupBuilding' | 'placeSetupRoad' | 'buildRoad' | 'buildSettlement' | 'buildCity' | 'moveRobber';
 
@@ -80,11 +81,26 @@ function HandRow({ hand }: { hand: Readonly<Record<CardType, number>> }) {
   return (
     <div className="hand-row" data-testid="private-hand">
       {CARD_TYPES.map((t) => (
-        <span key={t} className={`card card-${t}`} title={CARD_EN[t]}>
-          {CARD_LABEL[t]} <b>{hand[t]}</b>
+        <span key={t} className={`rcard ${hand[t] === 0 ? 'empty' : ''}`} title={CARD_EN[t]} style={{ background: `linear-gradient(160deg, ${CARD_BG[t][0]}, ${CARD_BG[t][1]})` }}>
+          <ResourceIcon type={t} size={34} />
+          <span className="rcard-label">{CARD_LABEL[t]}</span>
+          <b className="rcard-count">{hand[t]}</b>
         </span>
       ))}
     </div>
+  );
+}
+
+/** Mặt sau lá bài — chỉ số lượng (công khai). */
+function CardBacks({ count }: { count: number }) {
+  const shown = Math.min(count, 9);
+  return (
+    <span className="backs" aria-label={`${count} lá`}>
+      {Array.from({ length: shown }, (_, i) => (
+        <span key={i} className="card-back" style={{ transform: `rotate(${(i - (shown - 1) / 2) * 7}deg)`, left: i * 9 }} />
+      ))}
+      <b className="backs-count">{count}</b>
+    </span>
   );
 }
 
@@ -99,7 +115,7 @@ function DiscardPanel({ pv, pendingId, onSend, onClose }: { pv: PrivateGameView;
       <div className="grid-cards">
         {CARD_TYPES.filter((t) => pv.hand[t] > 0).map((t) => (
           <label key={t} className={`card card-${t}`}>
-            {CARD_LABEL[t]} ({pv.hand[t]}) <Stepper value={pick[t] ?? 0} max={pv.hand[t]} onChange={(n) => setPick({ ...pick, [t]: n })} />
+            <ResourceIcon type={t} size={22} /> {CARD_LABEL[t]} ({pv.hand[t]}) <Stepper value={pick[t] ?? 0} max={pv.hand[t]} onChange={(n) => setPick({ ...pick, [t]: n })} />
           </label>
         ))}
       </div>
@@ -129,7 +145,7 @@ function TradeComposer({ view, me, pv, ratios, onSend, onClose }: { view: Public
           <b>Đưa</b>
           {CARD_TYPES.map((t) => (
             <div key={t} className="trade-line">
-              {CARD_LABEL[t]} ({pv.hand[t]}) <Stepper value={offer[t] ?? 0} max={pv.hand[t]} onChange={(n) => setOffer({ ...offer, [t]: n })} />
+              <span><ResourceIcon type={t} size={20} /> {CARD_LABEL[t]} ({pv.hand[t]})</span> <Stepper value={offer[t] ?? 0} max={pv.hand[t]} onChange={(n) => setOffer({ ...offer, [t]: n })} />
             </div>
           ))}
         </div>
@@ -137,7 +153,7 @@ function TradeComposer({ view, me, pv, ratios, onSend, onClose }: { view: Public
           <b>Nhận</b>
           {CARD_TYPES.map((t) => (
             <div key={t} className="trade-line">
-              {CARD_LABEL[t]} <Stepper value={request[t] ?? 0} max={19} onChange={(n) => setRequest({ ...request, [t]: n })} />
+              <span><ResourceIcon type={t} size={20} /> {CARD_LABEL[t]}</span> <Stepper value={request[t] ?? 0} max={19} onChange={(n) => setRequest({ ...request, [t]: n })} />
             </div>
           ))}
         </div>
@@ -222,7 +238,8 @@ export function Tray(props: TrayProps) {
         <span className="pname" style={{ background: player.color }}>
           {ICON_GLYPH[player.icon]} {player.name}
         </span>
-        <span className="vp" data-testid={`vp-${me}`}>{player.score.total} điểm</span>
+        <span className="vp" data-testid={`vp-${me}`}>★ {player.score.total}</span>
+        <CardBacks count={player.handCount} />
         <span className="status" data-testid={`status-${me}`}>{status}</span>
         <button
           type="button"

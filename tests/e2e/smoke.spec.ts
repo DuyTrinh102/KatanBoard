@@ -56,6 +56,7 @@ test('giữ để xem bài: hiện khi giữ, che khi thả; chỉ một ngườ
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
   await expect(page.getByTestId('private-hand')).toHaveCount(1);
+  await page.screenshot({ path: 'test-results/private-hand.png' });
   await expect(page.getByTestId('hold-p2')).toContainText('đang xem bài');
   await page.mouse.up();
   await expect(page.getByTestId('private-hand')).toHaveCount(0);

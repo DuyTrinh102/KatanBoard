@@ -9,7 +9,7 @@ import type { EdgeId, HexId, VertexId } from '../board/topology';
 import { bankRatio, computeScore, handTotal, roadLengths, robberVictims, type ScoreBreakdown } from '../engine/queries';
 import { getLegalActions } from '../engine/legal';
 import type { Building, DiceResult, GameState, LogEntry, Phase, PlayerId, SeatId, SetupProgress, TradeProposal } from '../engine/state';
-import { CARD_TYPES, getRuleset, isRulesetVerified, type CardType } from '../rules';
+import { CARD_TYPES, getRuleset, isRulesetVerified, type Bundle, type CardType } from '../rules';
 
 export interface PublicPlayerView {
   readonly id: PlayerId;
@@ -64,6 +64,8 @@ export interface PublicGameView {
   readonly log: readonly PublicLogEntry[];
   readonly winner: PlayerId | null;
   readonly victoryTarget: number;
+  /** Bảng chi phí xây dựng (thông tin tham khảo công khai, lấy từ ruleset). */
+  readonly costs: { readonly road: Bundle; readonly settlement: Bundle; readonly city: Bundle };
 }
 
 export interface PrivateGameView {
@@ -132,6 +134,7 @@ export function getPublicView(state: GameState): PublicGameView {
     log: state.log.map((e) => publicLog(e, cfg.openTable)),
     winner: state.winner,
     victoryTarget: rs.victoryTarget.value,
+    costs: rs.costs.value,
   };
 }
 

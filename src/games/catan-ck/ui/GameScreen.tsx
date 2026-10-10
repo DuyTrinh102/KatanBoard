@@ -7,6 +7,8 @@ import { Board, type BoardTargets } from './Board';
 import { Tray, type Interaction, type InteractionKind } from './Tray';
 import { EVENT_LABEL, formatLog, ICON_GLYPH, playerName } from './format';
 import { CARD_LABEL } from '../engine/text';
+import { CARD_BG, Die, EventDie, GlobalDefs, ResourceIcon } from './art';
+import type { Bundle, CardType } from '../rules';
 import { CARD_TYPES } from '../rules';
 
 const STAGE_W = 1920;
@@ -22,6 +24,20 @@ function useStageScale(): number {
     return () => window.removeEventListener('resize', on);
   }, []);
   return scale;
+}
+
+function CostIcons({ bundle }: { bundle: Bundle }) {
+  return (
+    <span className="cost-icons">
+      {(Object.entries(bundle) as [CardType, number][]).flatMap(([t, n]) =>
+        Array.from({ length: n }, (_, i) => (
+          <span key={`${t}${i}`} className="mini-card" style={{ background: `linear-gradient(160deg, ${CARD_BG[t][0]}, ${CARD_BG[t][1]})` }} title={CARD_LABEL[t]}>
+            <ResourceIcon type={t} size={20} />
+          </span>
+        )),
+      )}
+    </span>
+  );
 }
 
 export interface GameScreenProps {
@@ -178,6 +194,7 @@ export function GameScreen({ session, onExit }: GameScreenProps) {
         ids: interaction.targets,
         color: view.players.find((p) => p.id === interaction.playerId)?.color ?? '#fff',
         selected: interaction.selected,
+        piece: interaction.kind === 'buildCity' || (interaction.kind === 'placeSetupBuilding' && view.setup?.round === 2) ? 'city' : 'settlement',
         onPick: pick,
       }
     : null;
@@ -200,6 +217,7 @@ export function GameScreen({ session, onExit }: GameScreenProps) {
 
   return (
     <div className="viewport" onPointerDownCapture={() => (lastTouch.current = Date.now())}>
+      <GlobalDefs />
       <div className="stage" style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}>
         <div className="board-area">
           <Board view={view} targets={paused ? null : targets} />
@@ -216,8 +234,9 @@ export function GameScreen({ session, onExit }: GameScreenProps) {
             <div className="box-title">Xúc xắc</div>
             {roll ? (
               <div className="dice" data-testid="dice">
-                <span className="die red">{roll.red}</span>
-                <span className="die yellow">{roll.yellow}</span>
+                <Die value={roll.red} color="red" />
+                <Die value={roll.yellow} color="yellow" />
+                <EventDie face={roll.event} />
                 <span className="sum">= {roll.red + roll.yellow}</span>
                 <div className="event">{EVENT_LABEL[roll.event]}</div>
               </div>
@@ -227,14 +246,30 @@ export function GameScreen({ session, onExit }: GameScreenProps) {
           </div>
           <div className="box">
             <div className="box-title">Barbarians</div>
-            <div className="muted">Tàu ở ô {view.barbarian.position} · cơ chế đầy đủ ở M2</div>
+            <div className="barb-track" aria-label={`Tàu barbarian ở ô ${view.barbarian.position}`}>
+              {Array.from({ length: 8 }, (_, i) => (
+                <span key={i} className={`barb-cell ${i === view.barbarian.position ? 'ship' : ''}`}>{i === view.barbarian.position ? '⛵' : ''}</span>
+              ))}
+            </div>
+            <div className="muted small">Cơ chế đầy đủ ở M2</div>
+          </div>
+          <div className="box costs-card">
+            <div className="box-title">Chi phí xây dựng*</div>
+            {([['road', 'Đường'], ['settlement', 'Settlement'], ['city', 'City']] as const).map(([k, label]) => (
+              <div key={k} className="cost-row">
+                <span className="cost-name">{label}</span>
+                <CostIcons bundle={view.costs[k]} />
+              </div>
+            ))}
+            <div className="muted small">* số liệu ứng viên, chờ kiểm chứng</div>
           </div>
           <div className="box">
             <div className="box-title">Ngân hàng</div>
             <div className="bank">
               {CARD_TYPES.map((t) => (
-                <span key={t}>
-                  {CARD_LABEL[t]} {view.bank[t]}
+                <span key={t} className="bank-stack" style={{ background: `linear-gradient(160deg, ${CARD_BG[t][0]}, ${CARD_BG[t][1]})` }} title={CARD_LABEL[t]}>
+                  <ResourceIcon type={t} size={26} />
+                  <b>{view.bank[t]}</b>
                 </span>
               ))}
             </div>
